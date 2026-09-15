@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Eridion image test</title>
+<style>
+body{font-family:-apple-system,Arial,sans-serif;padding:20px;background:#F7F8FA;color:#000;}
+h1{font-size:22px;color:#153862;}
+.row{padding:14px;margin:10px 0;font-size:18px;font-weight:bold;background:#fff;border:1px solid #ccc;}
+.wait{color:#946200;}
+.ok{color:#1E6B00;background:#EAF6E4;}
+.fail{color:#A00000;background:#F9E8E8;}
+.small{font-size:12px;font-weight:normal;color:#555;word-break:break-all;}
+img.t{width:120px;height:80px;object-fit:cover;display:block;margin-top:8px;border:1px solid #999;}
+</style>
+</head>
+<body>
+<h1>Eridion image test</h1>
+<p class="small">Show or photograph this whole screen.</p>
+<div class="row wait" id="r1">1. Image from photo server: testing…</div>
+<div class="row wait" id="r2">2. Image from GitHub Pages: testing…</div>
+<div class="row wait" id="r3">3. Built-in image (no network): testing…</div>
+<div class="row" id="ua"></div>
+<div class="row" id="err">JS errors: none so far</div>
+<script>
+window.onerror = function(msg, src, line){
+  document.getElementById("err").innerHTML = "JS ERROR: " + msg + " (line " + line + ")";
+  document.getElementById("err").className = "row fail";
+};
+document.getElementById("ua").innerHTML = "<span class='small'>Browser: " + navigator.userAgent + "</span>";
+function test(id, url, label){
+  var img = new Image();
+  var el = document.getElementById(id);
+  var done = false;
+  img.onload = function(){ if(done)return; done=true; el.innerHTML = label + ": <span class='ok'>LOADED ✓</span>"; el.className = "row ok"; el.appendChild(img); };
+  img.onerror = function(){ if(done)return; done=true; el.innerHTML = label + ": FAILED ✕"; el.className = "row fail"; };
+  setTimeout(function(){ if(done)return; done=true; el.innerHTML = label + ": TIMED OUT (15s)"; el.className = "row fail"; }, 15000);
+  img.className = "t";
+  img.src = url;
+}
+test("r1", "https://eridion-image-library.erikagonzalez103.workers.dev/img/thumb/cabin-2.jpg?t=" + Date.now(), "1. Image from photo server");
+test("r2", "https://erikagonzalez103-hash.github.io/eridion-ledger/lookbook/images/eridion-logo.png?t=" + Date.now(), "2. Image from GitHub Pages");
+test("r3", "data:image/gif;base64,R0lGODlhAQABAIAAADLSAgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==", "3. Built-in image (no network)");
+</script>
+</body>
+</html>
